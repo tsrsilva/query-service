@@ -1,0 +1,107 @@
+# =========================
+# Query Service Configuration
+# =========================
+
+project:
+  name: "PhenoBees Query Service"
+  version: "0.1"
+
+# -------------------------
+# Input / Output
+# -------------------------
+
+paths:
+  input_ttl: /data/kb.ttl
+  ontology_dir: /data/ontologies
+  queries_dir: /queries
+  output_dir: /outputs
+
+# -------------------------
+# Reasoning Layer
+# -------------------------
+
+reasoning:
+  enabled: true
+  engine: materializer
+
+  materializer:
+    exec_path: /tools/materializer-0.2.7/bin/materializer
+    ontology_file: /data/ontologies/phb.owl
+
+    options:
+      reasoner: whelk
+      mark_direct_types: true
+      output_indirect_types: true
+
+# -------------------------
+# Dataset Parameters
+# -------------------------
+
+dataset:
+  taxon_uri: "http://www.phenobees.org/kb#tu-20e48087-2a18-5a02-bfbf-d9e6564f3022"
+  structure_uri: "http://www.phenobees.org/kb#loc-19800542-daa6-5534-aa0c-f70987c063e7"
+
+# -------------------------
+# Query Execution
+# -------------------------
+
+queries:
+  q1_taxon:
+    file: q1_taxon.sparql
+    enabled: true
+    output: q1_taxon.csv
+    pivot:
+      enabled: true
+      row_key: taxon
+      column_key: anatomical_entity
+      value_key: quality
+
+  q2_structure:
+    file: q2_structure.sparql
+    enabled: true
+    output: q2_structure.csv
+    pivot:
+      enabled: true
+      row_key: taxon
+      column_key: anatomical_entity
+      value_key: quality
+
+  q3_combined:
+    file: q3_combined.sparql
+    enabled: true
+    output: q3_combined.csv
+    pivot:
+      enabled: true
+      row_key: taxon
+      column_key: anatomical_entity
+      value_key: quality
+
+# -------------------------
+# SPARQL Runtime Options
+# -------------------------
+
+sparql:
+  strict: true
+  use_inference: true
+  timeout_seconds: 60
+
+# -------------------------
+# Logging / Debugging
+# -------------------------
+
+logging:
+  level: INFO
+  save_query_logs: true
+  log_file: /outputs/query_service.log
+
+# -------------------------
+# Output Formatting
+# -------------------------
+
+output:
+  format: csv
+  include_headers: true
+  null_value: ""
+  encoding: utf-8 
+  pivot:
+    enabled: false

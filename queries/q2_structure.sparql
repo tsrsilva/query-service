@@ -1,0 +1,12 @@
+PREFIX cdao: <http://purl.obolibrary.org/obo/CDAO_>
+PREFIX phb: <https://raw.githubusercontent.com/tsrsilva/rdf-generator/refs/heads/main/data/ontologies/PHB_>
+
+SELECT ?taxon ?anatomical_entity ?quality
+WHERE {
+  ?cell cdao:0000191 ?taxon ;
+        phb:0000005 ?phenotype .
+  ?phenotype phb:0000001 ?anatomical_entity ;
+             phb:0000003 ?quality .
+  FILTER(?anatomical_entity = <STRUCTURE_URI>)
+}
+LIMIT 100

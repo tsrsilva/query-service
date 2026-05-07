@@ -1,0 +1,21 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX cdao: <http://purl.obolibrary.org/obo/CDAO_>
+PREFIX ro: <http://purl.obolibrary.org/obo/RO_>
+PREFIX phb: <https://raw.githubusercontent.com/tsrsilva/rdf-generator/refs/heads/main/data/ontologies/PHB_>
+
+SELECT ?taxon ?cell ?phenotype ?anatomical_entity ?quality
+WHERE {
+  # Strictest join order for smoke test: constrain taxon first.
+  ?organism ro:0003301 ?taxon .
+  FILTER(?taxon = <TAXON_URI>)
+
+  # Then retrieve only core phenotype/anatomy/quality links.
+  ?phenotype phb:0000002 ?organism ;
+             phb:0000001 ?anatomical_entity ;
+             phb:0000003 ?quality .
+
+  # Bring in cell only after taxon and phenotype are constrained.
+  ?cell phb:0000005 ?phenotype ;
+        cdao:0000191 ?taxon .
+}
+LIMIT 100

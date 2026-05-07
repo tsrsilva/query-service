@@ -1,0 +1,145 @@
+name: Remote CI, Release, and Docker
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      publish_docker:
+        description: Publish the Docker image to DockerHub
+        required: true
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: remote-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ci:
+    name: Reproducible CI Build
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11.9"
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip==24.3.1
+          pip install --requirement requirements.txt
+
+      - name: Run pipeline smoke test
+        run: python src/main.py
+
+      - name: Build Docker image
+        run: |
+          docker build --pull --tag tool4-ci:${{ github.sha }} .
+
+  release:
+    name: Semantic Release and Changelog
+    needs: ci
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: write
+    outputs:
+      released: ${{ steps.release_plan.outputs.released }}
+      version: ${{ steps.release_plan.outputs.version }}
+
+    steps:
+      - name: Checkout with tags
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11.9"
+
+      - name: Install semantic-release tooling
+        run: |
+          python -m pip install --upgrade pip==24.3.1
+          pip install "python-semantic-release[github]==10.4.1"
+
+      - name: Compute release plan
+        id: release_plan
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          NEXT_TAG=$(semantic-release version --print-tag)
+          LAST_TAG=$(semantic-release version --print-last-released-tag || true)
+
+          echo "version=${NEXT_TAG#v}" >> "$GITHUB_OUTPUT"
+
+          if [ -n "$LAST_TAG" ] && [ "$NEXT_TAG" = "$LAST_TAG" ]; then
+            echo "released=false" >> "$GITHUB_OUTPUT"
+            echo "No semantic release is required."
+          else
+            echo "released=true" >> "$GITHUB_OUTPUT"
+            echo "Releasing $NEXT_TAG"
+          fi
+
+      - name: Run semantic-release
+        if: steps.release_plan.outputs.released == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: semantic-release version
+
+      - name: Skip release
+        if: steps.release_plan.outputs.released != 'true'
+        run: echo "No new semantic version detected."
+
+  dockerhub:
+    name: Publish DockerHub Image
+    needs: release
+    if: github.event_name == 'workflow_dispatch' && inputs.publish_docker == true && needs.release.outputs.released == 'true'
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: read
+    env:
+      DOCKERHUB_IMAGE: ${{ vars.DOCKERHUB_IMAGE }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate DockerHub image variable
+        run: |
+          if [ -z "$DOCKERHUB_IMAGE" ]; then
+            echo "Repository variable DOCKERHUB_IMAGE is required (example: username/tool4)."
+            exit 1
+          fi
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_TOKEN }}
+
+      - name: Build and push image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ env.DOCKERHUB_IMAGE }}:${{ needs.release.outputs.version }}
+            ${{ env.DOCKERHUB_IMAGE }}:latest
