@@ -1,4 +1,6 @@
-## Query Service
+# Query Service
+
+[![CI/CD Pipeline](https://github.com/tsrsilva/query-service/actions/workflows/remote.yaml/badge.svg)](https://github.com/tsrsilva/query-service/actions)
 
 Query Service is a small RDF processing pipeline that materializes ontology-aware data and then runs a configured set of SPARQL queries to generate CSV outputs.
 
