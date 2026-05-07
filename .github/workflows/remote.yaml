@@ -1,5 +1,8 @@
 name: Remote CI, Release, and Docker
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 on:
   push:
     branches:
@@ -29,12 +32,12 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           lfs: true
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.11.9"
           cache: pip
@@ -65,12 +68,12 @@ jobs:
 
     steps:
       - name: Checkout with tags
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.11.9"
 
@@ -110,7 +113,7 @@ jobs:
   dockerhub:
     name: Publish DockerHub Image
     needs: release
-    if: github.event_name == 'workflow_dispatch' && inputs.publish_docker == true && needs.release.outputs.released == 'true'
+    if: needs.release.outputs.released == 'true' && (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.publish_docker == true))
     runs-on: ubuntu-22.04
     permissions:
       contents: read
@@ -119,7 +122,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           lfs: true
 
