@@ -1,6 +1,6 @@
 [project]
 name = "tool4"
-version = "0.1.0"
+version = "0.1.1"
 description = "RDF materialization and SPARQL query pipeline"
 requires-python = ">=3.11"
 
