@@ -33,3 +33,6 @@ desktop.ini
 *.log
 *.tmp
 *.bak
+
+# Report files
+REASONING_LIMITATIONS.md
