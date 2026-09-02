@@ -35,7 +35,7 @@ reasoning:
       http://purl.obolibrary.org/obo/iao.owl: /data/ontologies/iao.owl
       http://purl.obolibrary.org/obo/iao/ontology-metadata.owl: /data/ontologies/ontology-metadata.owl
       http://purl.obolibrary.org/obo/pato.owl: /data/ontologies/pato.owl
-      http://purl.obolibrary.org/obo/uberon.owl: /data/ontologies/uberon.owl
+      http://purl.obolibrary.org/obo/uberon.owl: /data/ontologies/uberon-basic.owl
 
   semantic_validation:
     enabled: true
