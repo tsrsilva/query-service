@@ -1,6 +1,7 @@
 import yaml
 from pathlib import Path
-from typing import Optional
+from typing import Any, Optional, cast
+from urllib.parse import urlparse
 from rdflib import Graph
 
 from transform import pivot_csv_if_configured, save_results_to_csv
@@ -38,10 +39,10 @@ def _normalize_config_paths(value, project_root: Path):
 def load_config(path="/app/config/config.yaml"):
     config_path = Path(path).resolve()
     with open(config_path, "r") as f:
-        config = yaml.safe_load(f)
+        config = cast(dict[str, Any], yaml.safe_load(f))
 
     project_root = config_path.parent.parent
-    return _normalize_config_paths(config, project_root)
+    return cast(dict[str, Any], _normalize_config_paths(config, project_root))
 
 
 # ----------------------------
@@ -64,21 +65,35 @@ def load_query(path: str) -> str:
 
 
 # ----------------------------
-# PARAM INJECTION (simple templating)
+# QUERY SCOPE INJECTION
 # ----------------------------
 
-def inject_params(query: str, dataset_cfg: dict) -> str:
-    required = {
-        "<TAXON_URI>": "taxon_uri",
-        "<STRUCTURE_URI>": "structure_uri",
+def _scope_values(variable: str, values: list[str], config_key: str) -> str:
+    if not values:
+        return ""
+
+    uris = []
+    for value in values:
+        if not isinstance(value, str) or not urlparse(value).scheme:
+            raise ValueError(f"query_scopes.{config_key} must contain absolute URI strings")
+        uris.append(f"<{value}>")
+
+    return f"VALUES {variable} {{ {' '.join(uris)} }}"
+
+
+def inject_query_scopes(query: str, query_scopes: dict) -> str:
+    scopes = query_scopes or {}
+    replacements = {
+        "<TAXON_SCOPE>": _scope_values("?taxon", scopes.get("taxon_uris", []), "taxon_uris"),
+        "<STRUCTURE_SCOPE>": _scope_values(
+            "?anatomical_entity",
+            scopes.get("anatomical_entity_uris", []),
+            "anatomical_entity_uris",
+        ),
     }
 
-    for placeholder, cfg_key in required.items():
-        if placeholder in query:
-            value = (dataset_cfg or {}).get(cfg_key)
-            if not value:
-                raise ValueError(f"Missing dataset.{cfg_key} for placeholder {placeholder}")
-            query = query.replace(placeholder, f"<{value}>")
+    for placeholder, replacement in replacements.items():
+        query = query.replace(placeholder, replacement)
 
     return query
 
@@ -124,8 +139,8 @@ def run_query_pipeline(config: dict, input_ttl: Optional[str] = None):
 
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    # Dataset parameters
-    dataset_cfg = config.get("dataset", {})
+    # Optional query scopes
+    query_scopes = config.get("query_scopes", {})
     global_output_cfg = config.get("output", {})
 
     print(f"Loading RDF graph from {input_ttl}")
@@ -148,7 +163,7 @@ def run_query_pipeline(config: dict, input_ttl: Optional[str] = None):
 
         # Load + inject params
         raw_query = load_query(query_file)
-        final_query = inject_params(raw_query, dataset_cfg)
+        final_query = inject_query_scopes(raw_query, query_scopes)
 
         # Execute
         results = run_query(graph, final_query)

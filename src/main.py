@@ -12,12 +12,24 @@ def main(config_path=None):
         config_path = DEFAULT_CONFIG_PATH
 
     config = load_config(config_path)
+    use_inference = config.get("sparql", {}).get("use_inference", False)
+    reasoning_enabled = config.get("reasoning", {}).get("enabled", True)
 
-    # Step 1: materialize input graph (or pass through when disabled)
-    materialized_ttl = run_materializer(config)
+    if use_inference and not reasoning_enabled:
+        raise ValueError(
+            "sparql.use_inference is true but reasoning.enabled is false. "
+            "Enable reasoning or set sparql.use_inference to false."
+        )
 
-    # Step 2 + 3: run SPARQL queries and write transformed CSV outputs
-    run_query_pipeline(config, materialized_ttl)
+    if use_inference:
+        print("Query inference enabled: materializing the ontology-aware graph.")
+        query_input_ttl = run_materializer(config)
+    else:
+        print("Query inference disabled: querying the asserted input graph.")
+        query_input_ttl = config["paths"]["input_ttl"]
+
+    # Run SPARQL queries and write transformed CSV outputs.
+    run_query_pipeline(config, query_input_ttl)
 
 
 if __name__ == "__main__":

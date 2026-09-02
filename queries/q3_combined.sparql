@@ -7,7 +7,7 @@ WHERE {
         phb:0000005 ?phenotype .
   ?phenotype phb:0000001 ?anatomical_entity ;
              phb:0000003 ?quality .
-  FILTER(?taxon = <TAXON_URI>)
-  FILTER(?anatomical_entity = <STRUCTURE_URI>)
+  <TAXON_SCOPE>
+  <STRUCTURE_SCOPE>
 }
 LIMIT 100
