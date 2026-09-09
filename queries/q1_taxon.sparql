@@ -15,4 +15,5 @@ WHERE {
   ?cell phb:0000005 ?phenotype ;
         cdao:0000191 ?taxon .
 }
-LIMIT 100
+ORDER BY ?taxon ?anatomical_entity ?phenotype ?cell
+<RESULT_LIMIT>

@@ -110,6 +110,10 @@ sparql:
   # Query the materialized graph when true; query paths.input_ttl when false.
   use_inference: true
   timeout_seconds: 60
+  # Rows per query when a query's own `limit` is unset. Set to 0 or null for unlimited.
+  default_result_limit: 1000
+  # Raise instead of warn when a query's limit truncates its result set.
+  fail_on_truncation: false
 
 # -------------------------
 # Logging / Debugging

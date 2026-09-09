@@ -3,16 +3,13 @@ from collections import defaultdict
 from pathlib import Path
 
 
-def save_results_to_csv(results, output_path):
+def save_results_to_csv(headers, rows, output_path):
     """
-    Converts SPARQL results into a CSV file.
+    Writes SPARQL result headers and rows to a CSV file.
     """
 
     output_path = Path(output_path)
     output_path.parent.mkdir(parents=True, exist_ok=True)
-
-    # Get variable names
-    headers = [str(h) for h in results.vars]
 
     with open(output_path, "w", newline="") as f:
         writer = csv.writer(f)
@@ -21,7 +18,7 @@ def save_results_to_csv(results, output_path):
         writer.writerow(headers)
 
         # Write rows
-        for row in results:
+        for row in rows:
             writer.writerow([str(cell) if cell is not None else "" for cell in row])
 
 

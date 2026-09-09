@@ -9,4 +9,5 @@ WHERE {
              phb:0000003 ?quality .
   <STRUCTURE_SCOPE>
 }
-LIMIT 100
+ORDER BY ?taxon ?anatomical_entity
+<RESULT_LIMIT>

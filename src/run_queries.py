@@ -99,11 +99,55 @@ def inject_query_scopes(query: str, query_scopes: dict) -> str:
 
 
 # ----------------------------
+# RESULT LIMIT INJECTION
+# ----------------------------
+
+def resolve_result_limit(sparql_cfg: dict, query_cfg: dict) -> Optional[int]:
+    limit = query_cfg.get("limit", (sparql_cfg or {}).get("default_result_limit"))
+    if limit in (None, 0):
+        return None
+    if not isinstance(limit, int) or isinstance(limit, bool) or limit < 0:
+        raise ValueError("limit must be a non-negative integer, or 0/null for unlimited")
+    return limit
+
+
+def inject_result_limit(query: str, limit: Optional[int]) -> str:
+    return query.replace("<RESULT_LIMIT>", f"LIMIT {limit}" if limit else "")
+
+
+# ----------------------------
 # EXECUTE SINGLE QUERY
 # ----------------------------
 
 def run_query(graph: Graph, query: str):
     return graph.query(query)
+
+
+def warn_if_truncated(
+    graph: Graph,
+    scoped_query: str,
+    limit: Optional[int],
+    row_count: int,
+    query_name: str,
+    fail_on_truncation: bool,
+) -> None:
+    """Detect truncation by re-running the same pattern without a limit."""
+    if limit is None or row_count != limit:
+        return
+
+    unlimited_query = inject_result_limit(scoped_query, None)
+    total_count = sum(1 for _ in graph.query(unlimited_query))
+    if total_count <= limit:
+        return
+
+    message = (
+        f"{query_name} returned {limit} of {total_count} matching rows. "
+        f"Increase queries.{query_name}.limit or sparql.default_result_limit, "
+        "or set the limit to 0 for unlimited results."
+    )
+    if fail_on_truncation:
+        raise RuntimeError(message)
+    print(f"WARNING: {message}")
 
 
 def _build_query_output_config(global_output_cfg: dict, query_cfg: dict) -> dict:
@@ -142,6 +186,8 @@ def run_query_pipeline(config: dict, input_ttl: Optional[str] = None):
     # Optional query scopes
     query_scopes = config.get("query_scopes", {})
     global_output_cfg = config.get("output", {})
+    sparql_cfg = config.get("sparql", {})
+    fail_on_truncation = sparql_cfg.get("fail_on_truncation", False)
 
     print(f"Loading RDF graph from {input_ttl}")
     graph = load_graph(input_ttl)
@@ -163,15 +209,21 @@ def run_query_pipeline(config: dict, input_ttl: Optional[str] = None):
 
         # Load + inject params
         raw_query = load_query(query_file)
-        final_query = inject_query_scopes(raw_query, query_scopes)
+        scoped_query = inject_query_scopes(raw_query, query_scopes)
+        limit = resolve_result_limit(sparql_cfg, qcfg)
+        final_query = inject_result_limit(scoped_query, limit)
 
         # Execute
         results = run_query(graph, final_query)
+        headers = [str(v) for v in results.vars]
+        rows = list(results)
 
         # Save
-        save_results_to_csv(results, output_file)
+        save_results_to_csv(headers, rows, output_file)
         query_output_cfg = _build_query_output_config(global_output_cfg, qcfg)
         pivot_csv_if_configured(output_file, query_output_cfg)
+
+        warn_if_truncated(graph, scoped_query, limit, len(rows), query_name, fail_on_truncation)
 
         print(f"Saved {query_name} → {output_file}")
 
