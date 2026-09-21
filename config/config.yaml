@@ -11,7 +11,7 @@ project:
 # -------------------------
 
 paths:
-  input_ttl: /data/kb_test.ttl
+  input_ttl: /data/kb.ttl
   ontology_dir: /data/ontologies
   queries_dir: /queries
   output_dir: /outputs
@@ -63,12 +63,12 @@ reasoning:
 
 query_scopes:
   taxon_uri: "https://www.gbif.org/species/1341587"
-  structure_uri: "http://purl.obolibrary.org/obo/AISM_0000026"
+  structure_uri: "http://purl.obolibrary.org/obo/HAO_0000804"
   # Empty lists query all taxa and anatomical entities. Add one or more URIs to restrict results.
   taxon_uris:
     - "https://www.gbif.org/species/1341587"
   anatomical_entity_uris:
-    - "http://purl.obolibrary.org/obo/AISM_0000026"
+    - "http://purl.obolibrary.org/obo/HAO_0000804"
 
 # -------------------------
 # Query Execution
