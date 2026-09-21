@@ -239,27 +239,39 @@ def run_query_pipeline(config: dict, input_ttl: Optional[str] = None):
         has_singular_structure = "<STRUCTURE_URI>" in raw_query
         has_values_scope = "<TAXON_SCOPE>" in raw_query or "<STRUCTURE_SCOPE>" in raw_query
 
-        singular_count = int(has_singular_taxon) + int(has_singular_structure)
-        if singular_count > 1 or (singular_count == 1 and has_values_scope):
+        # Singular and plural scope forms cannot be mixed in one file.
+        if has_values_scope and (has_singular_taxon or has_singular_structure):
             raise ValueError(
-                f"{query_name} mixes scope forms; use exactly one of "
-                "<TAXON_URI>, <STRUCTURE_URI>, <TAXON_SCOPE>, or <STRUCTURE_SCOPE>"
+                f"{query_name} mixes singular and plural scope forms; use only "
+                "<TAXON_URI>/<STRUCTURE_URI> or only <TAXON_SCOPE>/<STRUCTURE_SCOPE>"
             )
 
+        scoped_query = raw_query
+
         if has_singular_taxon:
-            scoped_query = inject_taxon_uri(raw_query, query_scopes)
-        elif has_singular_structure:
-            scoped_query = inject_structure_uri(raw_query, query_scopes)
-        else:
-            scoped_query = inject_query_scopes(raw_query, query_scopes)
+            scoped_query = inject_taxon_uri(scoped_query, query_scopes)
+        if has_singular_structure:
+            scoped_query = inject_structure_uri(scoped_query, query_scopes)
+        if has_values_scope:
+            scoped_query = inject_query_scopes(scoped_query, query_scopes)
 
         limit = resolve_result_limit(sparql_cfg, qcfg)
         final_query = inject_result_limit(scoped_query, limit)
 
+    # --- TEMPORARY DEBUG ---
+        print(f"=== {query_name} final query ===")
+        print(final_query)
+        print(f"=== {query_name} contains <STRUCTURE_URI>? {'<STRUCTURE_URI>' in final_query}")
+        # -----------------------
+
         # Execute
         results = run_query(graph, final_query)
+        if results.vars is None:
+            raise RuntimeError(f"{query_name} returned a result with no variable bindings")
         headers = [str(v) for v in results.vars]
         rows = list(results)
+
+        print(f"=== {query_name} row count: {len(rows)}")
 
         # Save
         save_results_to_csv(headers, rows, output_file)

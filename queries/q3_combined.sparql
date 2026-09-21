@@ -1,14 +1,26 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX cdao: <http://purl.obolibrary.org/obo/CDAO_>
+PREFIX ro: <http://purl.obolibrary.org/obo/RO_>
+PREFIX iao: <http://purl.obolibrary.org/obo/IAO_>
 PREFIX phb: <https://raw.githubusercontent.com/tsrsilva/rdf-generator/refs/heads/main/data/ontologies/PHB_>
 
 SELECT ?taxon ?anatomical_entity ?quality
 WHERE {
-  ?cell cdao:0000191 ?taxon ;
-        phb:0000005 ?phenotype .
-  ?phenotype phb:0000001 ?anatomical_entity ;
+  BIND(<TAXON_URI> AS ?taxon)
+  ?speciesInstance rdfs:seeAlso ?taxon .
+  ?taxonInstance iao:0000219 ?speciesInstance .
+  ?organism ro:0003301 ?taxonInstance .
+
+  BIND(<STRUCTURE_URI> AS ?anatomical_entity)
+  ?anatomicalEntityInstance rdf:type ?anatomical_entity .
+
+  ?phenotype phb:0000002 ?organism ;
+             phb:0000001 ?anatomicalEntityInstance ;
              phb:0000003 ?quality .
-  <TAXON_SCOPE>
-  <STRUCTURE_SCOPE>
+
+  ?cell phb:0000005 ?phenotype ;
+        cdao:0000191 ?taxonInstance .
 }
 ORDER BY ?taxon ?anatomical_entity
 <RESULT_LIMIT>
