@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v0.2.6 (2026-09-21)
+
+### Bug Fixes
+
+- Update q1 and q2 queries
+  ([`05a78ea`](https://github.com/tsrsilva/query-service/commit/05a78ea4ec4705b5dce0339ef992513188ef1c5d))
+
+
 ## v0.2.5 (2026-09-21)
 
 ### Bug Fixes
