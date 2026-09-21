@@ -80,6 +80,29 @@ def _scope_values(variable: str, values: list[str], config_key: str) -> str:
 
     return f"VALUES {variable} {{ {' '.join(uris)} }}"
 
+def inject_taxon_uri(query: str, query_scopes: dict) -> str:
+    """Substitute the singular <TAXON_URI> placeholder with one absolute IRI."""
+    taxon_uri = (query_scopes or {}).get("taxon_uri")
+    if not isinstance(taxon_uri, str) or not urlparse(taxon_uri).scheme:
+        raise ValueError(
+            "query_scopes.taxon_uri must be an absolute URI string "
+            "(required by queries using <TAXON_URI>)"
+        )
+    return query.replace("<TAXON_URI>", f"<{taxon_uri}>")
+
+def inject_structure_uri(query: str, query_scopes: dict) -> str:
+    """Substitute the singular <STRUCTURE_URI> placeholder with one absolute IRI."""
+    if "structure_uri" not in (query_scopes or {}):
+        raise ValueError(
+            "queries using <STRUCTURE_URI> require query_scopes.structure_uri "
+            "(a single absolute URI string, not the plural anatomical_entity_uris list)"
+        )
+    structure_uri = query_scopes["structure_uri"]
+    if not isinstance(structure_uri, str) or not urlparse(structure_uri).scheme:
+        raise ValueError(
+            f"query_scopes.structure_uri must be an absolute URI string, got {structure_uri!r}"
+        )
+    return query.replace("<STRUCTURE_URI>", f"<{structure_uri}>")
 
 def inject_query_scopes(query: str, query_scopes: dict) -> str:
     scopes = query_scopes or {}
@@ -209,7 +232,27 @@ def run_query_pipeline(config: dict, input_ttl: Optional[str] = None):
 
         # Load + inject params
         raw_query = load_query(query_file)
-        scoped_query = inject_query_scopes(raw_query, query_scopes)
+
+        # Route to the correct scope injector based on which placeholder the file uses.
+        # A single query file should use one form, not both.
+        has_singular_taxon = "<TAXON_URI>" in raw_query
+        has_singular_structure = "<STRUCTURE_URI>" in raw_query
+        has_values_scope = "<TAXON_SCOPE>" in raw_query or "<STRUCTURE_SCOPE>" in raw_query
+
+        singular_count = int(has_singular_taxon) + int(has_singular_structure)
+        if singular_count > 1 or (singular_count == 1 and has_values_scope):
+            raise ValueError(
+                f"{query_name} mixes scope forms; use exactly one of "
+                "<TAXON_URI>, <STRUCTURE_URI>, <TAXON_SCOPE>, or <STRUCTURE_SCOPE>"
+            )
+
+        if has_singular_taxon:
+            scoped_query = inject_taxon_uri(raw_query, query_scopes)
+        elif has_singular_structure:
+            scoped_query = inject_structure_uri(raw_query, query_scopes)
+        else:
+            scoped_query = inject_query_scopes(raw_query, query_scopes)
+
         limit = resolve_result_limit(sparql_cfg, qcfg)
         final_query = inject_result_limit(scoped_query, limit)
 

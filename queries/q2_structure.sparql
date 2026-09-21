@@ -1,13 +1,16 @@
 PREFIX cdao: <http://purl.obolibrary.org/obo/CDAO_>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX phb: <https://raw.githubusercontent.com/tsrsilva/rdf-generator/refs/heads/main/data/ontologies/PHB_>
 
 SELECT ?taxon ?anatomical_entity ?quality
 WHERE {
-  ?cell cdao:0000191 ?taxon ;
-        phb:0000005 ?phenotype .
+  BIND(<STRUCTURE_URI> AS ?anatomical_entity)
+
   ?phenotype phb:0000001 ?anatomical_entity ;
              phb:0000003 ?quality .
-  <STRUCTURE_SCOPE>
+
+  ?cell cdao:0000191 ?taxon ;
+        phb:0000005 ?phenotype .
 }
-ORDER BY ?taxon ?anatomical_entity
+ORDER BY ?taxon
 <RESULT_LIMIT>
