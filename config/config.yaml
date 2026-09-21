@@ -62,11 +62,11 @@ reasoning:
 # -------------------------
 
 query_scopes:
-  taxon_uri: "http://www.phenobees.org/kb#tu-edc735f9-2ee7-5d26-b0d9-629762095889"
+  taxon_uri: "https://www.gbif.org/species/1341587"
   structure_uri: "http://purl.obolibrary.org/obo/AISM_0000026"
   # Empty lists query all taxa and anatomical entities. Add one or more URIs to restrict results.
   taxon_uris:
-    - "http://www.phenobees.org/kb#tu-edc735f9-2ee7-5d26-b0d9-629762095889"
+    - "https://www.gbif.org/species/1341587"
   anatomical_entity_uris:
     - "http://purl.obolibrary.org/obo/AISM_0000026"
 
