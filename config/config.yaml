@@ -11,7 +11,7 @@ project:
 # -------------------------
 
 paths:
-  input_ttl: /data
+  input_ttl: /data/kb_test.ttl
   ontology_dir: /data/ontologies
   queries_dir: /queries
   output_dir: /outputs
