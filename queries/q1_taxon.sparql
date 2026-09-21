@@ -7,8 +7,8 @@ PREFIX phb: <https://raw.githubusercontent.com/tsrsilva/rdf-generator/refs/heads
 
 SELECT ?taxon ?cell ?phenotype ?anatomical_entity ?quality
 WHERE {
-  BIND(<TAXON_URI> AS ?taxonClass)
-  ?speciesInstance rdfs:seeAlso ?taxonClass .
+  BIND(<TAXON_URI> AS ?taxon)
+  ?speciesInstance rdfs:seeAlso ?taxon .
   ?taxonInstance iao:0000219 ?speciesInstance .
   ?organism ro:0003301 ?taxonInstance .
 

@@ -1,3 +1,4 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX cdao: <http://purl.obolibrary.org/obo/CDAO_>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX phb: <https://raw.githubusercontent.com/tsrsilva/rdf-generator/refs/heads/main/data/ontologies/PHB_>
@@ -5,8 +6,9 @@ PREFIX phb: <https://raw.githubusercontent.com/tsrsilva/rdf-generator/refs/heads
 SELECT ?taxon ?anatomical_entity ?quality
 WHERE {
   BIND(<STRUCTURE_URI> AS ?anatomical_entity)
+  ?anatomicalEntityInstance rdf:type ?anatomical_entity .
 
-  ?phenotype phb:0000001 ?anatomical_entity ;
+  ?phenotype phb:0000001 ?anatomicalEntityInstance ;
              phb:0000003 ?quality .
 
   ?cell cdao:0000191 ?taxon ;
