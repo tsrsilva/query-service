@@ -28,6 +28,10 @@ def pivot_csv_if_configured(csv_path, output_cfg):
     Enabled only when output.pivot.enabled=true in config.
     """
 
+    #pivot_cfg =output_cfg.get("pivot")
+    #if not pivot_cfg or not pivot_cfg.get("enabled", True):
+    #    return
+
     pivot_cfg = (output_cfg or {}).get("pivot", {})
     if not pivot_cfg.get("enabled", False):
         return

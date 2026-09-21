@@ -11,7 +11,7 @@ def main(config_path=None):
     if config_path is None:
         config_path = DEFAULT_CONFIG_PATH
 
-    config = load_config(config_path)
+    config = load_config(config_path) # type: ignore
     use_inference = config.get("sparql", {}).get("use_inference", False)
     reasoning_enabled = config.get("reasoning", {}).get("enabled", True)
 

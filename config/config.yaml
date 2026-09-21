@@ -11,7 +11,7 @@ project:
 # -------------------------
 
 paths:
-  input_ttl: /data/kb.ttl
+  input_ttl: /data/kb_test.ttl
   ontology_dir: /data/ontologies
   queries_dir: /queries
   output_dir: /outputs
@@ -21,7 +21,7 @@ paths:
 # -------------------------
 
 reasoning:
-  enabled: true
+  enabled: false
   engine: materializer
 
   import_validation:
@@ -62,9 +62,13 @@ reasoning:
 # -------------------------
 
 query_scopes:
+  taxon_uri: "http://www.phenobees.org/kb#tu-edc735f9-2ee7-5d26-b0d9-629762095889"
+  structure_uri: "http://purl.obolibrary.org/obo/AISM_0000026"
   # Empty lists query all taxa and anatomical entities. Add one or more URIs to restrict results.
-  taxon_uris: []
-  anatomical_entity_uris: []
+  taxon_uris:
+    - "http://www.phenobees.org/kb#tu-edc735f9-2ee7-5d26-b0d9-629762095889"
+  anatomical_entity_uris:
+    - "http://purl.obolibrary.org/obo/AISM_0000026"
 
 # -------------------------
 # Query Execution
@@ -108,10 +112,10 @@ queries:
 sparql:
   strict: true
   # Query the materialized graph when true; query paths.input_ttl when false.
-  use_inference: true
-  timeout_seconds: 60
+  use_inference: false
+  timeout_seconds: 0
   # Rows per query when a query's own `limit` is unset. Set to 0 or null for unlimited.
-  default_result_limit: 1000
+  default_result_limit: 0
   # Raise instead of warn when a query's limit truncates its result set.
   fail_on_truncation: false
 
@@ -133,5 +137,5 @@ output:
   include_headers: true
   null_value: ""
   encoding: utf-8 
-  pivot:
-    enabled: false
+  #pivot:
+    #enabled: false
