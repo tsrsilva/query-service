@@ -2,6 +2,22 @@
 
 <!-- version list -->
 
+## v0.2.5 (2026-09-21)
+
+### Bug Fixes
+
+- Update query structure
+  ([`8079676`](https://github.com/tsrsilva/query-service/commit/8079676a06446057bbb704a941be718360b3cb28))
+
+- Update query structure
+  ([`e02553a`](https://github.com/tsrsilva/query-service/commit/e02553a75a62609c65bf5faceb698c6f312c2491))
+
+### Documentation
+
+- Populate CHANGELOG.md with historical release notes and insertion marker
+  ([`16ac230`](https://github.com/tsrsilva/query-service/commit/16ac2300fab239f8e7a90419bbc8e1315efd7e45))
+
+
 ## Unreleased
 
 ### Bug Fixes
