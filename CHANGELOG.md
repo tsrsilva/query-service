@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v0.2.7 (2026-09-21)
+
+### Bug Fixes
+
+- Update q3 structure
+  ([`6fe56ec`](https://github.com/tsrsilva/query-service/commit/6fe56ec0c1c3f98f410d8c48415a953e7a5381b3))
+
+
 ## v0.2.6 (2026-09-21)
 
 ### Bug Fixes
