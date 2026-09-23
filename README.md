@@ -2,15 +2,17 @@
 
 [![CI/CD Pipeline](https://github.com/tsrsilva/query-service/actions/workflows/remote.yaml/badge.svg)](https://github.com/tsrsilva/query-service/actions)
 
-Query Service is a small RDF processing pipeline that materializes ontology-aware data and then runs a configured set of SPARQL queries to generate CSV outputs.
+Query Service is a small RDF processing pipeline that runs a configured set of SPARQL queries to generate CSV outputs as validation.
 
 The project is designed to:
 
 - load a YAML configuration file
-- optionally materialize an input Turtle graph with the bundled materializer tool
+- optionally materialize an input Turtle graph with the bundled materializer tool (**WIP - see note below**)
 - run one or more SPARQL queries over the resulting graph
 - save the query results as CSV files
-- optionally pivot CSV outputs when configured
+
+>**Materialization** is implemented in the pipeline, but is currently turned off as default. We are working on it and suggest that external users **DO NOT** use it at this moment.
+
 
 ## Main Components
 
@@ -69,3 +71,7 @@ query-service/
 ├── CHANGELOG.md
 └── requirements.txt
 ```
+
+## Deprecated Functions
+
+- Optionally pivot CSV outputs when configured
