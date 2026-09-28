@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v0.2.8 (2026-09-28)
+
+### Bug Fixes
+
+- Update kb and mock ontology
+  ([`a3c0003`](https://github.com/tsrsilva/query-service/commit/a3c000356b581e0cb07f78f5a4ca326be3533603))
+
+
 ## v0.2.7 (2026-09-21)
 
 ### Bug Fixes
