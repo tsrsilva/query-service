@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v0.2.10 (2026-10-01)
+
+### Bug Fixes
+
+- Adjust q1 csv output rows
+  ([`f937dea`](https://github.com/tsrsilva/query-service/commit/f937dea28052035b05b6cc12ee31101bcf26d6a1))
+
+
 ## v0.2.9 (2026-10-01)
 
 ### Bug Fixes
