@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v0.2.9 (2026-10-01)
+
+### Bug Fixes
+
+- Update q2 to query species class instead of tu
+  ([`8fc1460`](https://github.com/tsrsilva/query-service/commit/8fc1460bc87b5167d656e4ca1c61e3f97683faf9))
+
+
 ## v0.2.8 (2026-09-28)
 
 ### Bug Fixes
