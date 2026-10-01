@@ -137,5 +137,5 @@ output:
   include_headers: true
   null_value: ""
   encoding: utf-8 
-  #pivot:
-    #enabled: false
+  # pivot:
+  #   enabled: false
