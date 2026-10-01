@@ -258,7 +258,7 @@ def run_query_pipeline(config: dict, input_ttl: Optional[str] = None):
         limit = resolve_result_limit(sparql_cfg, qcfg)
         final_query = inject_result_limit(scoped_query, limit)
 
-    # --- TEMPORARY DEBUG ---
+        # --- TEMPORARY DEBUG ---
         print(f"=== {query_name} final query ===")
         print(final_query)
         print(f"=== {query_name} contains <STRUCTURE_URI>? {'<STRUCTURE_URI>' in final_query}")

@@ -8,10 +8,13 @@ WHERE {
   BIND(<STRUCTURE_URI> AS ?anatomical_entity)
   ?anatomicalEntityInstance rdf:type ?anatomical_entity .
 
+  ?speciesInstance rdfs:seeAlso ?taxon .
+  ?tu iao:0000219 ?speciesInstance .
+
   ?phenotype phb:0000001 ?anatomicalEntityInstance ;
              phb:0000003 ?quality .
 
-  ?cell cdao:0000191 ?taxon ;
+  ?cell cdao:0000191 ?tu ;
         phb:0000005 ?phenotype .
 }
 ORDER BY ?taxon
