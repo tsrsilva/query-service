@@ -81,6 +81,7 @@ queries:
     output: q1_taxon.csv
     pivot:
       enabled: true
+      mode: long
       row_key: taxon
       column_key: anatomical_entity
       value_key: quality

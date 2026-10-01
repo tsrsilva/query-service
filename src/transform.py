@@ -28,14 +28,11 @@ def pivot_csv_if_configured(csv_path, output_cfg):
     Enabled only when output.pivot.enabled=true in config.
     """
 
-    #pivot_cfg =output_cfg.get("pivot")
-    #if not pivot_cfg or not pivot_cfg.get("enabled", True):
-    #    return
-
     pivot_cfg = (output_cfg or {}).get("pivot", {})
     if not pivot_cfg.get("enabled", False):
         return
 
+    mode = pivot_cfg.get("mode", "wide")
     row_key = pivot_cfg.get("row_key")
     column_key = pivot_cfg.get("column_key")
     value_key = pivot_cfg.get("value_key")
@@ -52,6 +49,17 @@ def pivot_csv_if_configured(csv_path, output_cfg):
     for required_col in (row_key, column_key, value_key):
         if required_col not in fieldnames:
             raise ValueError(f"Pivot column '{required_col}' not found in {csv_path}")
+
+    if mode == "long":
+        with open(csv_path, "w", newline="") as f:
+            writer = csv.writer(f)
+            writer.writerow([row_key, column_key, value_key])
+            writer.writerows(
+                [row[row_key], row[column_key], row[value_key]] for row in rows
+            )
+        return
+    if mode != "wide":
+        raise ValueError(f"Unsupported output.pivot.mode: {mode}")
 
     columns = []
     column_seen = set()
