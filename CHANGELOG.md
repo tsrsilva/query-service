@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v0.3.0 (2026-10-12)
+
+### Features
+
+- Add MIT license to repo. Closes #9
+  ([`520e58b`](https://github.com/tsrsilva/query-service/commit/520e58b7247b8ecde87d618cded693fe90a3d93e))
+
+
 ## v0.2.11 (2026-10-12)
 
 ### Bug Fixes
