@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v0.2.11 (2026-10-12)
+
+### Bug Fixes
+
+- Update kb.ttl
+  ([`a683557`](https://github.com/tsrsilva/query-service/commit/a683557697724ebdfb7d450a20f5957dda90f124))
+
+
 ## v0.2.10 (2026-10-01)
 
 ### Bug Fixes
