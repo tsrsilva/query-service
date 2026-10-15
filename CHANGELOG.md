@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v0.4.0 (2026-10-15)
+
+### Features
+
+- Update kb.ttl
+  ([`0ba5b77`](https://github.com/tsrsilva/query-service/commit/0ba5b77e6b4b20611c44db323ed2599551981d76))
+
+
 ## v0.3.0 (2026-10-12)
 
 ### Features
