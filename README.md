@@ -25,7 +25,35 @@ The project is designed to:
 - `data/`: input RDF data and ontologies
 - `outputs/`: generated materialized TTL and CSV results
 
-## Running Locally
+## Usage
+
+For most collaborators, the easiest way to run the tool is using Docker. This ensures consistent dependencies and paths, without requiring local Python setup.
+
+### Option 1: Using Docker Compose (recommended)
+
+```bash
+docker compose build
+docker compose run --rm query-service
+```
+
+This will:
+
+- Build the Docker image
+- Run the container
+- Generate outputs in ```outputs/```
+
+No extra volume mounts or Docker commands are required.
+
+### Option 2: Building the Docker image manually
+
+```bash
+docker build -t query-service .
+docker run --rm query-service
+```
+
+Using Option 1 or 2 is recommended to avoid manual volume mounts and ensure consistent input/output paths.
+
+### Option 3: Running locally without Docker (not recommended)
 
 Install dependencies:
 
