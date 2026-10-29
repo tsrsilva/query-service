@@ -1,0 +1,17 @@
+# SPDX-FileCopyrightText: 2026 Thiago S. R. Silva, Diego S. Porto
+# SPDX-License-Identifier: MIT
+
+services:
+  query-service:
+    build: .
+    container_name: query-service
+    volumes:
+      # Mount input data folder
+      - ./data:/app/data
+      # Mount outputs folder so results persist on host
+      - ./outputs:/app/outputs
+      # Mount configuration file
+      - ./configs/config.yaml:/app/configs/config.yaml
+    environment:
+      - ENV=production
+    command: ["python", "src/main.py"]

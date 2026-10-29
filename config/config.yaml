@@ -80,7 +80,7 @@ queries:
     enabled: true
     output: q1_taxon.csv
     pivot:
-      enabled: true
+      enabled: false
       mode: long
       row_key: taxon
       column_key: anatomical_entity
@@ -91,7 +91,7 @@ queries:
     enabled: true
     output: q2_structure.csv
     pivot:
-      enabled: true
+      enabled: false
       row_key: taxon
       column_key: anatomical_entity
       value_key: quality
@@ -101,7 +101,7 @@ queries:
     enabled: true
     output: q3_combined.csv
     pivot:
-      enabled: true
+      enabled: false
       row_key: taxon
       column_key: anatomical_entity
       value_key: quality
