@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v0.5.0 (2026-10-29)
+
+### Features
+
+- Implement compose
+  ([`be6fccf`](https://github.com/tsrsilva/query-service/commit/be6fccfe430b9baf48793ceb6de739484198ee0b))
+
+
 ## v0.4.0 (2026-10-15)
 
 ### Features
